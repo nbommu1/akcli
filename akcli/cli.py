@@ -61,15 +61,15 @@ def add_record(ctx, zone, name, type, target, ttl):
 @dns.command()
 @click.argument('zone')
 @click.argument('name')
-@click.argument('type', type=click.Choice(SUPPORTED_RECORD_TYPES))
+@click.argument('type', required=False, type=click.Choice(SUPPORTED_RECORD_TYPES))
 @click.pass_context
-def fetch_record(ctx, zone, name, type):
-    record = ctx.obj.akamai_dns.fetch_record(zone_name=zone, record_type=type, name=name)
+def fetch_record(ctx, zone, name, type=None):
+    records = ctx.obj.akamai_dns.fetch_record(zone_name=zone, record_type=type, name=name)
     if ctx.obj.json:
         click.echo(json.dumps(record))
     else:
-        click.echo(record)
-
+        for record in records:
+            click.echo('{name:30}{type:20}{target:20}{ttl:10}'.format(**record))
 
 @dns.command()
 @click.argument('zone')

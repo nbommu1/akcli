@@ -77,6 +77,23 @@ class AkamaiDNS(object):
             return [r for r in records if r['type'] == record_type.upper()]
         return records
 
+    def fetch_record(self, zone_name, name, record_type=None):
+        ''' fetch a record for a pertucular Zone.
+        :param zone_name: This is the name of the zone e.g. example.com.
+        :param record_type: (Optional) The type of records to limit the list to.
+        :return: record for the zone.
+        '''
+        zone = self.fetch_zone(zone_name)
+        records = []
+        if not  zone:
+           raise AkamaiDNSError('Zone {0} not found.'.format(zone_name))
+
+        for record in self.list_records(zone_name):
+            if (record['name'] == name.lower()):
+               for key, val in record.items():
+                   records.append(record)
+                   return records
+
     def add_record(self, zone_name, record_type, name, target, ttl=600):
         '''Add a new DNS record to a zone.
 
